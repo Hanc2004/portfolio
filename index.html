@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hellena Nzellu — Systems &amp; Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1720;
+    --surface:#16212C;
+    --surface-2:#1C2A38;
+    --line:#26384A;
+    --text:#E7ECF0;
+    --muted:#8CA0AC;
+    --teal:#4FD1C5;
+    --amber:#F0B429;
+    --mono:'JetBrains Mono', monospace;
+    --sans:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  a{color:inherit;}
+
+  /* background grid */
+  .grid-bg{
+    position:fixed; inset:0; z-index:-1;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:56px 56px;
+    opacity:0.15;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 6vw;
+    background:rgba(15,23,32,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:var(--mono); font-weight:700; font-size:15px; letter-spacing:0.5px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .logo .dot{width:8px; height:8px; border-radius:50%; background:var(--teal); box-shadow:0 0 8px var(--teal);}
+  nav{display:flex; gap:32px; font-family:var(--mono); font-size:13px;}
+  nav a{color:var(--muted); text-decoration:none; transition:color .2s;}
+  nav a:hover{color:var(--teal);}
+
+  section{padding:100px 6vw; max-width:1200px; margin:0 auto;}
+
+  /* HERO */
+  .hero{
+    min-height:88vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding-top:60px;
+  }
+  .status-line{
+    font-family:var(--mono); font-size:12px; color:var(--teal);
+    display:flex; align-items:center; gap:8px; margin-bottom:28px;
+    letter-spacing:1px;
+  }
+  .status-line::before{
+    content:''; width:7px; height:7px; border-radius:50%; background:var(--teal);
+    box-shadow:0 0 10px var(--teal); animation:pulse 1.8s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  h1{
+    font-family:var(--mono); font-weight:800;
+    font-size:clamp(38px, 6.5vw, 76px);
+    line-height:1.05; letter-spacing:-1px;
+    max-width:900px;
+  }
+  h1 span{color:var(--muted); font-weight:400;}
+  .hero p.sub{
+    margin-top:22px; max-width:560px; font-size:17px; color:var(--muted);
+  }
+  .hero .cta-row{margin-top:38px; display:flex; gap:16px; flex-wrap:wrap; align-items:center;}
+  .btn{
+    font-family:var(--mono); font-size:13px; padding:12px 22px;
+    border-radius:4px; text-decoration:none; letter-spacing:0.5px;
+    transition:transform .15s, border-color .15s;
+    border:1px solid var(--line);
+    display:inline-block;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn.primary{background:var(--teal); color:#0F1720; font-weight:700; border-color:var(--teal);}
+  .btn.ghost{color:var(--text); border-color:var(--line);}
+  .btn.ghost:hover{border-color:var(--teal); color:var(--teal);}
+
+  /* topology diagram */
+  .topology{margin-top:64px; width:100%; overflow:visible;}
+  .topo-line{
+    stroke:var(--line); stroke-width:1.5; fill:none;
+    stroke-dasharray:6 6;
+  }
+  .topo-line.active{stroke:var(--teal); opacity:.55;}
+  .node-core circle{fill:var(--surface-2); stroke:var(--teal); stroke-width:1.5;}
+  .node-port rect{fill:var(--surface); stroke:var(--line); stroke-width:1;}
+  .node-port text, .node-core text{font-family:var(--mono); fill:var(--text);}
+  .node-port .label-sub{fill:var(--muted); font-size:9px;}
+
+  /* SECTION HEADS */
+  .sec-head{margin-bottom:56px;}
+  .sec-tag{
+    font-family:var(--mono); font-size:12px; color:var(--amber);
+    letter-spacing:1.5px; margin-bottom:10px; display:block;
+  }
+  .sec-head h2{
+    font-family:var(--mono); font-size:clamp(26px,3.4vw,38px); font-weight:700;
+  }
+  .sec-head p{color:var(--muted); margin-top:12px; max-width:600px;}
+
+  /* PROJECTS */
+  .project{
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:var(--surface);
+    margin-bottom:28px;
+    overflow:hidden;
+    position:relative;
+  }
+  .project-head{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:28px 30px 0 30px; gap:20px; flex-wrap:wrap;
+  }
+  .port-id{
+    font-family:var(--mono); font-size:12px; color:var(--teal);
+    border:1px solid var(--teal); border-radius:3px; padding:3px 9px;
+    white-space:nowrap; height:fit-content;
+  }
+  .project h3{font-family:var(--mono); font-size:22px; font-weight:700;}
+  .project .tagline{color:var(--muted); font-size:14.5px; margin-top:6px;}
+  .project-body{padding:20px 30px 28px 30px;}
+  .project-body p{color:#C6D0D8; font-size:15px; max-width:760px;}
+  .tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:20px;}
+  .tag{
+    font-family:var(--mono); font-size:11.5px; color:var(--muted);
+    background:var(--surface-2); border:1px solid var(--line);
+    padding:5px 10px; border-radius:3px;
+  }
+  .project-links{margin-top:20px; display:flex; gap:18px; font-family:var(--mono); font-size:13px;}
+  .project-links a{color:var(--teal); text-decoration:none; border-bottom:1px dashed transparent;}
+  .project-links a:hover{border-bottom-color:var(--teal);}
+  .field-badge{
+    position:absolute; top:0; right:0;
+    background:var(--amber); color:#0F1720;
+    font-family:var(--mono); font-size:10.5px; font-weight:700;
+    padding:5px 12px; border-bottom-left-radius:6px; letter-spacing:0.5px;
+  }
+  .diagram-slot{
+    margin-top:20px; border:1px dashed var(--line); border-radius:4px;
+    padding:22px; text-align:center; color:var(--muted);
+    font-family:var(--mono); font-size:12px; background:var(--surface-2);
+  }
+  .diagram-figure{
+    margin-top:20px; border:1px solid var(--line); border-radius:6px;
+    overflow:hidden; background:#fff;
+  }
+  .diagram-figure img{width:100%; display:block;}
+  .diagram-figure figcaption{
+    font-family:var(--mono); font-size:11.5px; color:var(--muted);
+    background:var(--surface-2); padding:10px 16px; border-top:1px solid var(--line);
+  }
+
+  /* SKILLS */
+  .skills-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px;}
+  .skill-card{border:1px solid var(--line); border-radius:6px; padding:22px; background:var(--surface);}
+  .skill-card .cat{font-family:var(--mono); font-size:12px; color:var(--amber); letter-spacing:1px; margin-bottom:14px;}
+  .skill-card ul{list-style:none;}
+  .skill-card li{font-size:14px; color:#C6D0D8; padding:4px 0; display:flex; align-items:center; gap:8px;}
+  .skill-card li::before{content:''; width:5px; height:5px; background:var(--teal); border-radius:50%; flex-shrink:0;}
+
+  /* FOOTER / CONTACT */
+  footer{
+    border-top:1px solid var(--line); padding:70px 6vw 40px;
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:20px;
+  }
+  footer h2{font-family:var(--mono); font-size:clamp(24px,3vw,34px);}
+  footer p{color:var(--muted); max-width:480px;}
+  .contact-row{display:flex; gap:18px; flex-wrap:wrap; justify-content:center; margin-top:10px;}
+  .foot-note{margin-top:40px; font-family:var(--mono); font-size:11.5px; color:#4C5C68;}
+
+  @media(max-width:640px){
+    section{padding:70px 6vw;}
+    nav{display:none;}
+    .topology{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<header>
+  <div class="logo"><span class="dot"></span>HELLENA.NZELLU</div>
+  <nav>
+    <a href="#projects">projects</a>
+    <a href="#skills">skills</a>
+    <a href="#contact">contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="status-line">STATUS: OPEN TO SOFTWARE / DATA / SYSTEMS ROLES · DAR ES SALAAM, TZ</div>
+  <h1>Hellena Nzellu<br><span>builds and connects systems —</span><br>backend, data, and infrastructure.</h1>
+  <p class="sub">BSc Computer Systems &amp; Networks student at Ardhi University. I build APIs, pipelines, and interfaces — and I've wired the physical layer too, from RJ-45 terminations to embedded IoT.</p>
+  <div class="cta-row">
+    <a href="#projects" class="btn primary">View projects</a>
+    <a href="https://github.com/Hanc2004" class="btn ghost" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+
+  <svg class="topology" viewBox="0 0 1080 220" preserveAspectRatio="xMidYMid meet">
+    <!-- lines from core to 4 ports -->
+    <path class="topo-line active" d="M 90 110 C 220 110, 220 40, 320 40" />
+    <path class="topo-line active" d="M 90 110 C 220 110, 220 90, 320 90" />
+    <path class="topo-line active" d="M 90 110 C 220 110, 220 130, 320 130" />
+    <path class="topo-line active" d="M 90 110 C 220 110, 220 180, 320 180" />
+
+    <!-- core node -->
+    <g class="node-core">
+      <circle cx="55" cy="110" r="42"/>
+      <text x="55" y="107" font-size="11" text-anchor="middle" font-weight="700">HN</text>
+      <text x="55" y="121" font-size="8" text-anchor="middle" fill="#8CA0AC">node</text>
+    </g>
+
+    <!-- port 01 auth-api -->
+    <g class="node-port">
+      <rect x="320" y="20" width="230" height="40" rx="4"/>
+      <text x="336" y="36" font-size="10.5" font-weight="700">PORT 01</text>
+      <text x="336" y="50" class="label-sub">auth-api · Node/Express</text>
+    </g>
+    <!-- port 02 task-manager -->
+    <g class="node-port">
+      <rect x="320" y="70" width="230" height="40" rx="4"/>
+      <text x="336" y="86" font-size="10.5" font-weight="700">PORT 02</text>
+      <text x="336" y="100" class="label-sub">task-manager · Next.js</text>
+    </g>
+    <!-- port 03 fintech -->
+    <g class="node-port">
+      <rect x="320" y="110" width="230" height="40" rx="4"/>
+      <text x="336" y="126" font-size="10.5" font-weight="700">PORT 03</text>
+      <text x="336" y="140" class="label-sub">fintech-pipeline · Python</text>
+    </g>
+    <!-- port 04 e-GA -->
+    <g class="node-port">
+      <rect x="320" y="160" width="230" height="40" rx="4"/>
+      <text x="336" y="176" font-size="10.5" font-weight="700">PORT 04</text>
+      <text x="336" y="190" class="label-sub">e-GA training · IoT / AI</text>
+    </g>
+  </svg>
+</section>
+
+<section id="projects">
+  <div class="sec-head">
+    <span class="sec-tag">[ ACTIVE CONNECTIONS ]</span>
+    <h2>Projects</h2>
+    <p>Four ports, four systems — spanning backend APIs, a data pipeline, a role-based frontend, and hands-on field work in IoT and networking.</p>
+  </div>
+
+  <!-- PROJECT 1 -->
+  <div class="project">
+    <div class="project-head">
+      <div>
+        <h3>auth-api</h3>
+        <p class="tagline">Authentication service with JWT, Google OAuth, and a full CI/CD pipeline</p>
+      </div>
+      <span class="port-id">PORT 01</span>
+    </div>
+    <div class="project-body">
+      <p>A Node.js/Express REST API handling authentication end to end: JWT-based sessions alongside Google OAuth, backed by PostgreSQL. The service is containerized with Docker and ships through a GitHub Actions pipeline that runs the Jest/Supertest suite before deploy. Deployed and live on Render.</p>
+      <div class="tags">
+        <span class="tag">Node.js</span><span class="tag">Express</span><span class="tag">PostgreSQL</span>
+        <span class="tag">Docker</span><span class="tag">GitHub Actions</span><span class="tag">Jest / Supertest</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/Hanc2004/auth-api" target="_blank" rel="noopener">Source →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT 2 -->
+  <div class="project">
+    <div class="project-head">
+      <div>
+        <h3>task-manager-frontend</h3>
+        <p class="tagline">Role-based task management, from user dashboard to admin panel</p>
+      </div>
+      <span class="port-id">PORT 02</span>
+    </div>
+    <div class="project-body">
+      <p>A Next.js and Tailwind CSS frontend built on top of auth-api, with an AuthContext managing session state across the app. Role-based access control separates the admin and user experience across four pages, including a dashboard and a dedicated admin panel. Deployed on Vercel.</p>
+      <div class="tags">
+        <span class="tag">Next.js</span><span class="tag">Tailwind CSS</span><span class="tag">RBAC</span><span class="tag">Vercel</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/Hanc2004/task-manager-frontend" target="_blank" rel="noopener">Source →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT 3 -->
+  <div class="project">
+    <div class="project-head">
+      <div>
+        <h3>fintech-pipeline</h3>
+        <p class="tagline">An ETL pipeline turning raw transactions into a live dashboard</p>
+      </div>
+      <span class="port-id">PORT 03</span>
+    </div>
+    <div class="project-body">
+      <p>A Python ETL pipeline using pandas and SQLAlchemy to clean and load fintech transaction data, scheduled to run automatically through GitHub Actions. The processed data feeds a Metabase dashboard, with SQL window functions and CTEs used to answer real analytical questions over the schema. Built with a Selcom Data Engineer role in mind.</p>
+      <div class="tags">
+        <span class="tag">Python</span><span class="tag">pandas</span><span class="tag">SQLAlchemy</span>
+        <span class="tag">GitHub Actions</span><span class="tag">Metabase</span><span class="tag">SQL</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/Hanc2004/fintech-pipeline" target="_blank" rel="noopener">Source →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT 4 : e-GA -->
+  <div class="project">
+    <span class="field-badge">FIELD EXPERIENCE</span>
+    <div class="project-head">
+      <div>
+        <h3>Industrial Training — e-Government Authority</h3>
+        <p class="tagline">IoT, AI, and networking in the field, built at e-GA's Research &amp; ICT Development Centre</p>
+      </div>
+      <span class="port-id">PORT 04</span>
+    </div>
+    <div class="project-body">
+      <p>Six weeks embedded at e-GA's RIDC in Dodoma, working on the physical and applied side of computer systems. The core assignment was a <strong>Smart Outlet</strong>: an IoT-enabled power outlet with voice control and AI-driven usage prediction. I designed the interface in Figma, built the companion Android app, converted voice commands with speech-to-text matched via embedding similarity, and used MQTT to talk to an embedded IoT module built by e-GA — a microcontroller and sensors wired directly into the outlet. On top of the hardware, an AI layer predicted future electricity consumption to help cut waste.</p>
+      <figure class="diagram-figure">
+        <img src="images/smart-outlet-architecture.jpg" alt="Smart Outlet Enhanced with Voice Assistant — system architecture diagram">
+        <figcaption>Smart Outlet architecture: mobile app → FastAPI → STT + embedding model → server → MQTT → access point → smart outlet, with electrical data reported back at each stage.</figcaption>
+      </figure>
+      <p style="margin-top:20px;">Alongside that, I took part in an IoT hackathon focused on a fingerprint attendance device that was functional but physically exposed, with its circuit board and wiring unprotected. The task was to design and print a new enclosure to fix that. I modeled the casing in FreeCAD, OpenSCAD, Blender, and Fusion 360, working from the device's real dimensions so the fingerprint sensor, ports, and mounting points all lined up correctly. Once the model was ready, I prepared it for printing using PrusaSlicer, which converts the 3D design into G-code — the layer-by-layer instructions a 3D printer follows — and printed it on a Prusa 3D printer. The finished enclosure fully covered the internal electronics, included a wall-mount fitting so the device could be installed like a real access-control unit, and gave the device a durable, tamper-resistant shell suitable for actual deployment rather than just a lab prototype.</p>
+      <p style="margin-top:16px;">Separately, I trained on RJ-45 Ethernet termination: arranging the cable pairs in the correct colour order, crimping them into RJ-45 connectors, and testing each cable with a cable tester before it went into service — the same process used to wire real network infrastructure. I also visited both e-GA's headquarters and the National Assembly (Bunge) to see how ICT systems support day-to-day government operations and policy-making directly.</p>
+      <div class="tags">
+        <span class="tag">IoT</span><span class="tag">Android Studio</span><span class="tag">MQTT</span>
+        <span class="tag">AI / Prediction</span><span class="tag">Figma</span><span class="tag">Fusion 360</span>
+        <span class="tag">3D Printing</span><span class="tag">RJ-45 / Networking</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="sec-head">
+    <span class="sec-tag">[ CAPABILITIES ]</span>
+    <h2>Skills</h2>
+    <p>Grouped by where I've actually used them — across shipped code, live infrastructure, and field hardware.</p>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="cat">BACKEND &amp; DATA</div>
+      <ul>
+        <li>Node.js / Express</li>
+        <li>Python (pandas, SQLAlchemy)</li>
+        <li>PostgreSQL &amp; SQL (CTEs, window functions)</li>
+        <li>REST API design &amp; JWT/OAuth</li>
+      </ul>
+    </div>
+    <div class="skill-card">
+      <div class="cat">FRONTEND</div>
+      <ul>
+        <li>Next.js / React</li>
+        <li>Tailwind CSS</li>
+        <li>Role-based access control</li>
+        <li>Android Studio</li>
+      </ul>
+    </div>
+    <div class="skill-card">
+      <div class="cat">SYSTEMS &amp; NETWORKING</div>
+      <ul>
+        <li>Docker &amp; containerization</li>
+        <li>GitHub Actions CI/CD</li>
+        <li>RJ-45 termination &amp; testing</li>
+        <li>Active Directory / DNS / DHCP fundamentals</li>
+      </ul>
+    </div>
+    <div class="skill-card">
+      <div class="cat">IOT &amp; TOOLS</div>
+      <ul>
+        <li>MQTT &amp; embedded IoT integration</li>
+        <li>Figma</li>
+        <li>Fusion 360 / FreeCAD / PrusaSlicer</li>
+        <li>Postman, VS Code, PowerShell</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <h2>Let's connect the next system.</h2>
+  <p>Open to software development, data engineering, and systems administration roles. Based in Dar es Salaam, Tanzania.</p>
+  <div class="contact-row">
+    <a href="https://github.com/Hanc2004" class="btn primary" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:nzelluhellena@gmail.com" class="btn ghost">Email</a>
+  </div>
+  <div class="foot-note">HELLENA NZELLU · ARDHI UNIVERSITY · DAR ES SALAAM</div>
+</footer>
+
+</body>
+</html>
